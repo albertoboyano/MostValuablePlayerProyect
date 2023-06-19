@@ -1,0 +1,126 @@
+<Sports>
+	<Basketball>
+		<Player>
+			<PlayerName>player 1</PlayerName>
+			<Nickname>nick1</Nickname>
+			<Number>4</Number>
+			<TeamName>Team A</TeamName>
+			<Position>G</Position>
+			<ScoredPoints>10</ScoredPoints>
+			<Rebounds>2</Rebounds>
+			<Assists>7</Assists>
+		</Player>
+		<Player>
+			<PlayerName>player 2</PlayerName>
+			<Nickname>nick2</Nickname>
+			<Number>8</Number>
+			<TeamName>Team A</TeamName>
+			<Position>F</Position>
+			<ScoredPoints>0</ScoredPoints>
+			<Rebounds>10</Rebounds>
+			<Assists>0</Assists>
+		</Player>
+		<Player>
+			<PlayerName>player 3</PlayerName>
+			<Nickname>nick3</Nickname>
+			<Number>15</Number>
+			<TeamName>Team A</TeamName>
+			<Position>C</Position>
+			<ScoredPoints>15</ScoredPoints>
+			<Rebounds>10</Rebounds>
+			<Assists>4</Assists>
+		</Player>
+		<Player>
+			<PlayerName>player 4</PlayerName>
+			<Nickname>nick4</Nickname>
+			<Number>16</Number>
+			<TeamName>Team B</TeamName>
+			<Position>G</Position>
+			<ScoredPoints>20</ScoredPoints>
+			<Rebounds>0</Rebounds>
+			<Assists>0</Assists>
+		</Player>
+		<Player>
+			<PlayerName>player 5</PlayerName>
+			<Nickname>nick5</Nickname>
+			<Number>23</Number>
+			<TeamName>Team B</TeamName>
+			<Position>F</Position>
+			<ScoredPoints>4</ScoredPoints>
+			<Rebounds>7</Rebounds>
+			<Assists>7</Assists>
+		</Player>
+		<Player>
+			<PlayerName>player 6</PlayerName>
+			<Nickname>nick6</Nickname>
+			<Number>53</Number>
+			<TeamName>Team B</TeamName>
+			<Position>C</Position>
+			<ScoredPoints>8</ScoredPoints>
+			<Rebounds>10</Rebounds>
+			<Assists>0</Assists>
+		</Player>
+	</Basketball>
+	<Handball>
+		<Player>
+			<PlayerName>player 1</PlayerName>
+			<Nickname>nick1</Nickname>
+			<Number>4</Number>
+			<TeamName>Team A</TeamName>
+			<Position>G</Position>
+			<InitialRatingPoints>23</InitialRatingPoints>
+			<GoalsMade>0</GoalsMade>
+			<GoalsReceived>20</GoalsReceived>
+		</Player>
+		<Player>
+			<PlayerName>player 2</PlayerName>
+			<Nickname>nick2</Nickname>
+			<Number>8</Number>
+			<TeamName>Team A</TeamName>
+			<Position>F</Position>
+			<InitialRatingPoints>65</InitialRatingPoints>
+			<GoalsMade>15</GoalsMade>
+			<GoalsReceived>20</GoalsReceived>
+		</Player>
+		<Player>
+			<PlayerName>player 3</PlayerName>
+			<Nickname>nick3</Nickname>
+			<Number>15</Number>
+			<TeamName>Team A</TeamName>
+			<Position>F</Position>
+			<InitialRatingPoints>43</InitialRatingPoints>
+			<GoalsMade>10</GoalsMade>
+			<GoalsReceived>20</GoalsReceived>
+		</Player>
+		<Player>
+			<PlayerName>player 4</PlayerName>
+			<Nickname>nick4</Nickname>
+			<Number>16</Number>
+			<TeamName>Team B</TeamName>
+			<Position>G</Position>
+			<InitialRatingPoints>23</InitialRatingPoints>
+			<GoalsMade>1</GoalsMade>
+			<GoalsReceived>25</GoalsReceived>
+		</Player>
+		<Player>
+			<PlayerName>player 5</PlayerName>
+			<Nickname>nick5</Nickname>
+			<Number>23</Number>
+			<TeamName>Team B</TeamName>
+			<Position>F</Position>
+			<InitialRatingPoints>65</InitialRatingPoints>
+			<GoalsMade>12</GoalsMade>
+			<GoalsReceived>25</GoalsReceived>
+		</Player>
+		<Player>
+			<PlayerName>player 6</PlayerName>
+			<Nickname>nick6</Nickname>
+			<Number>42</Number>
+			<TeamName>Team B</TeamName>
+			<Position>F</Position>
+			<InitialRatingPoints>43</InitialRatingPoints>
+			<GoalsMade>8</GoalsMade>
+			<GoalsReceived>25</GoalsReceived>
+		</Player>
+	</Handball>
+</Sports>
