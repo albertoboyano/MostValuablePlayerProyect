@@ -1,153 +1,147 @@
-﻿using CodeTestMostValuablePlayerProyect.Model.Players.Basketball;
-using CodeTestMostValuablePlayerProyect.Model.Players.Handball;
+﻿using CodeTestMostValuablePlayerProyect.Interface;
+using CodeTestMostValuablePlayerProyect.Model.Players;
 using System.Xml.Linq;
 
 namespace CodeTestMostValuablePlayerProyect.Tools
 {
     public static class XMLHelper
     {
-        private static List<BasketballPlayer> BasketballPlayersList = new List<BasketballPlayer>();
-        private static List<HandballPlayer> HandballPlayersList = new List<HandballPlayer>();
-
-        public static List<BasketballPlayer> GetBasketballPlayers(List<string> paths)
+        public static List<T> GetPlayers<T>(List<string> paths, string sportType) where T : class
         {
+            List<T> playersList = new List<T>();
+
             foreach (string path in paths)
             {
                 XDocument xDocument = XDocument.Load(path);
-                BasketballPlayersList.AddRange(xDocument.Root.Element("Basketball")
+                var players = xDocument.Root.Element(sportType)
                     .Descendants("Player")
-                    .Select(node => new BasketballPlayer
-                    {
-                        PlayerName = node.Element("PlayerName").Value,
-                        Nickname = node.Element("Nickname").Value,
-                        Number = int.Parse(node.Element("Number").Value),
-                        TeamName = node.Element("TeamName").Value,
-                        Position = node.Element("Position").Value,
-                        ScoredPoints = int.Parse(node.Element("ScoredPoints").Value),
-                        Rebounds = int.Parse(node.Element("Rebounds").Value),
-                        Assists = int.Parse(node.Element("Assists").Value),
-                    })
-                .ToList());
+                    .Select(node => CreatePlayer<T>(node))
+                    .Where(player => player != null)
+                    .ToList();
 
-                UpdatePointCounterBasketballPlayers();
+                playersList.AddRange(players);
             }
 
-            var result = from item in BasketballPlayersList
-                         group item by item.Nickname into g
-                         select new BasketballPlayer()
-                         {
-                             Nickname = g.Key,
-                             ScoredPoints = g.Sum(x => x.ScoredPoints),
-                             Rebounds = g.Sum(x => x.Rebounds),
-                             Assists = g.Sum(x => x.Assists)
-                         };
+            if (typeof(T) == typeof(BasketballPlayer))
+            {
+                UpdatePointCounter<BasketballPlayer>((List<BasketballPlayer>)(object)playersList);
+            }
+            else if (typeof(T) == typeof(HandballPlayer))
+            {
+                UpdatePointCounter<HandballPlayer>((List<HandballPlayer>)(object)playersList);
+            }
 
-            return result.ToList();
-
+            return AggregatePlayers<T>(playersList);
         }
 
-        private static void UpdatePointCounterBasketballPlayers()
+        private static T CreatePlayer<T>(XElement node) where T : class
         {
-            string winnerTeam = GetWinnerBasketballTeam(BasketballPlayersList);
-
-            foreach (BasketballPlayer player in BasketballPlayersList)
+            if (typeof(T) == typeof(BasketballPlayer))
             {
-                if (player.TeamName == winnerTeam)
+                return new BasketballPlayer
                 {
-                    player.MatchWin();
+                    PlayerName = node.Element("PlayerName")?.Value,
+                    Nickname = node.Element("Nickname")?.Value,
+                    Number = int.Parse(node.Element("Number")?.Value ?? "0"),
+                    TeamName = node.Element("TeamName")?.Value,
+                    Position = node.Element("Position")?.Value,
+                    ScoredPoints = int.Parse(node.Element("ScoredPoints")?.Value ?? "0"),
+                    Rebounds = int.Parse(node.Element("Rebounds")?.Value ?? "0"),
+                    Assists = int.Parse(node.Element("Assists")?.Value ?? "0")
+                } as T;
+            }
+            else if (typeof(T) == typeof(HandballPlayer))
+            {
+                return new HandballPlayer
+                {
+                    PlayerName = node.Element("PlayerName")?.Value ?? string.Empty,
+                    Nickname = node.Element("Nickname")?.Value,
+                    Number = int.Parse(node.Element("Number")?.Value ?? "0"),
+                    TeamName = node.Element("TeamName")?.Value,
+                    Position = node.Element("Position")?.Value,
+                    GoalsMade = int.Parse(node.Element("GoalsMade")?.Value ?? "0"),
+                    GoalsReceived = int.Parse(node.Element("GoalsReceived")?.Value ?? "0")
+                } as T;
+            }
+            return null;
+        }
+
+        private static List<T> AggregatePlayers<T>(List<T> playersList) where T : class
+        {
+            if (typeof(T) == typeof(BasketballPlayer))
+            {
+                return ((List<BasketballPlayer>)(object)playersList)
+                    .GroupBy(p => p.Nickname)
+                    .Select(g => new BasketballPlayer
+                    {
+                        Nickname = g.Key,
+                        ScoredPoints = g.Sum(x => x.ScoredPoints),
+                        Rebounds = g.Sum(x => x.Rebounds),
+                        Assists = g.Sum(x => x.Assists)
+                    })
+                    .ToList() as List<T>;
+            }
+            else if (typeof(T) == typeof(HandballPlayer))
+            {
+                return ((List<HandballPlayer>)(object)playersList)
+                    .GroupBy(p => p.Nickname)
+                    .Select(g => new HandballPlayer
+                    {
+                        Nickname = g.Key,
+                        GoalsMade = g.Sum(x => x.GoalsMade),
+                        GoalsReceived = g.Sum(x => x.GoalsReceived)
+                    })
+                    .ToList() as List<T>;
+            }
+
+            return playersList;
+        }
+
+        private static void UpdatePointCounter<T>(List<T> playersList) where T : class
+        {
+            if (typeof(T) == typeof(BasketballPlayer))
+            {
+                string winnerTeam = GetWinnerBasketballTeam((List<BasketballPlayer>)(object)playersList);
+
+                foreach (var player in (List<BasketballPlayer>)(object)playersList)
+                {
+                    if (player.TeamName == winnerTeam)
+                    {
+                        player.MatchWin();
+                    }
+                }
+            }
+            else if (typeof(T) == typeof(HandballPlayer))
+            {
+                string winnerTeam = GetWinnerHandballTeam((List<HandballPlayer>)(object)playersList);
+
+                foreach (var player in (List<HandballPlayer>)(object)playersList)
+                {
+                    if (player.TeamName == winnerTeam)
+                    {
+                        player.MatchWin();
+                    }
                 }
             }
         }
 
         private static string GetWinnerBasketballTeam(List<BasketballPlayer> playersList)
         {
-            List<string> teams = playersList.GroupBy(x => x.TeamName).Select(x => x.Key).ToList();
-
-            int golTeamA = 0, golTeamB = 0;
-
-            foreach (BasketballPlayer player in playersList)
-            {
-                if (player.TeamName == teams[0])
-                {
-                    golTeamA += player.ScoredPoints;
-                }
-                else if (player.TeamName == teams[1])
-                {
-                    golTeamB += player.ScoredPoints;
-                }
-            }
-            return golTeamA > golTeamB ? teams[0] : teams[1];
-
+            return GetWinnerTeam(playersList, p => p.ScoredPoints);
         }
 
-        public static List<HandballPlayer> GetHandballPlayers(List<string> paths)
+        private static string GetWinnerHandballTeam(List<HandballPlayer> playersList)
         {
-
-
-            foreach (string path in paths)
-            {
-                XDocument xDocument = XDocument.Load(path);
-                HandballPlayersList.AddRange(xDocument.Root.Element("Handball")
-                    .Descendants("Player")
-                    .Select(node => new HandballPlayer
-                    {
-                        PlayerName = node.Element("PlayerName") != null ? node.Element("PlayerName").Value : string.Empty,
-                        Nickname = node.Element("Nickname").Value,
-                        Number = int.Parse(node.Element("Number").Value),
-                        TeamName = node.Element("TeamName").Value,
-                        Position = node.Element("Position").Value,
-                        GoalsMade = int.Parse(node.Element("GoalsMade").Value),
-                        GoalsReceived = int.Parse(node.Element("GoalsReceived").Value)
-                    })
-                    .ToList());
-
-                UpdatePointCounterHandballPlayer();
-            }
-
-            var result = from item in HandballPlayersList
-                         group item by item.Nickname into g
-                         select new HandballPlayer()
-                         {
-                             Nickname = g.Key,
-                             GoalsMade = g.Sum(x => x.GoalsMade),
-                             GoalsReceived = g.Sum(x => x.GoalsReceived)
-                         };
-
-            return result.ToList();
-
+            return GetWinnerTeam(playersList, p => p.GoalsMade);
         }
 
-        private static void UpdatePointCounterHandballPlayer()
+        private static string GetWinnerTeam<T>(List<T> playersList, Func<T, int> scoreSelector) where T : IPlayer
         {
-            string winnerTeam = GetWinnerHandballTeams(HandballPlayersList);
+            var teams = playersList.GroupBy(p => p.TeamName).Select(g => g.Key).ToList();
+            int teamAScore = playersList.Where(p => p.TeamName == teams[0]).Sum(scoreSelector);
+            int teamBScore = playersList.Where(p => p.TeamName == teams[1]).Sum(scoreSelector);
 
-            foreach (HandballPlayer player in HandballPlayersList)
-            {
-                if (player.TeamName == winnerTeam)
-                {
-                    player.MatchWin();
-                }
-            }
-        }
-
-        private static string GetWinnerHandballTeams(List<HandballPlayer> playersList)
-        {
-            List<string> teams = playersList.GroupBy(x => x.TeamName).Select(x => x.Key).ToList();
-
-            int golTeamA = 0, golTeamB = 0;
-
-            foreach (HandballPlayer player in playersList)
-            {
-                if (player.TeamName == teams[0])
-                {
-                    golTeamA += player.GoalsMade;
-                }
-                else if (player.TeamName == teams[1])
-                {
-                    golTeamB += player.GoalsMade;
-                }
-            }
-            return golTeamA > golTeamB ? teams[0] : teams[1];
+            return teamAScore > teamBScore ? teams[0] : teams[1];
         }
     }
 }

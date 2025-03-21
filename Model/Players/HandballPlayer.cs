@@ -1,23 +1,24 @@
 ﻿using CodeTestMostValuablePlayerProyect.Interface;
 
-namespace CodeTestMostValuablePlayerProyect.Model.Players.Basketball
+namespace CodeTestMostValuablePlayerProyect.Model.Players
 {
-    public class BasketballPlayer : Player, IPlayer
+    public class HandballPlayer : Player, IPlayer
     {
         public string PlayerName { get; set; }
         public string Nickname { get; set; }
         public int Number { get; set; }
         public string TeamName { get; set; }
         public string Position { get; set; }
-        public int ScoredPoints { get; set; }
-        public int Rebounds { get; set; }
-        public int Assists { get; set; }
+        public int InitialRatingPoints { get; set; }
+        public int GoalsMade { get; set; }
+        public int GoalsReceived { get; set; }
         public int PointCounter
         {
             get
             {
-                return ScoredPoints * 2 + Rebounds * 1 + Assists * 3 + MatchWinCounter * 10;
+                return InitialRatingPoints + GoalsMade * 5 - GoalsReceived * 2 + MatchWinCounter * 10;
             }
         }
+
     }
 }
